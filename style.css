@@ -1,0 +1,175 @@
+/* ベース設定 */
+:root {
+    --bg-color: #FAF7F0;
+    --text-color: #594A4E;
+    --accent-color: #D4A373;
+    --accent-hover: #C58E60;
+    --card-bg: #FFFFFF;
+    --font-main: "Zen Maru Gothic", sans-serif;
+}
+
+/* ダークモード（夜用） */
+body.dark-mode {
+    --bg-color: #1A1A2E;
+    --text-color: #E0E0E0;
+    --accent-color: #533483;
+    --accent-hover: #6B48A1;
+    --card-bg: rgba(255, 255, 255, 0.05);
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-main);
+    margin: 0;
+    padding: 20px;
+    transition: background-color 0.5s;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* 設定エリア */
+.settings-box {
+    background-color: rgba(0,0,0,0.03);
+    border-radius: 15px;
+    padding: 10px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+.settings-box summary {
+    cursor: pointer;
+    font-weight: bold;
+    list-style: none; /* 三角を消す */
+    text-align: center;
+}
+
+.checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 8px;
+    margin-top: 10px;
+}
+.checkbox-grid label {
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.sub-btn {
+    background: #eee;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: #333;
+}
+
+/* ガチャボタン */
+.main-btn {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 15px 50px;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+    width: 100%;
+    max-width: 300px;
+}
+.main-btn:active {
+    transform: scale(0.95);
+}
+
+/* 結果カード */
+.book-card {
+    background-color: var(--card-bg);
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    text-align: left;
+}
+.hidden { display: none; }
+
+.publisher-label {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    margin-top: 0;
+}
+
+.book-content {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+.img-area img {
+    width: 120px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.info-area {
+    flex: 1;
+}
+h2 {
+    font-size: 1.1rem;
+    margin: 0 0 5px 0;
+}
+.author { font-weight: bold; margin: 0 0 10px 0; }
+.price { font-size: 0.9rem; margin: 0; }
+.date { font-size: 0.8rem; opacity: 0.7; margin: 0; }
+
+/* ボタンリンク */
+.buy-buttons {
+    display: flex;
+    gap: 10px;
+}
+.buy-buttons a {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+.btn-rakuten {
+    background-color: #bf0000;
+    color: white;
+}
+.btn-amazon {
+    background-color: #f0c14b;
+    color: #111;
+}
+
+.btn-twitter {
+    display: block;
+    background-color: #1DA1F2;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9rem;
+    width: 200px;
+    margin: 10px auto 0;
+}
+
+/* スマホ対応 */
+@media (max-width: 480px) {
+    .book-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .buy-buttons {
+        flex-direction: column;
+    }
+}

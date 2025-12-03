@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新書ガチャ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>📚 新書ガチャ</h1>
+            <p>偶然の一冊との出会いを。</p>
+        </header>
+
+        <details class="settings-box">
+            <summary>⚙️ シリーズ（レーベル）で選ぶ</summary>
+            <div class="filter-area">
+                <div class="filter-buttons">
+                    <button id="btn-select-all" class="sub-btn">全選択</button>
+                    <button id="btn-reset-default" class="sub-btn">基本の3レーベルに戻す</button>
+                </div>
+                <div id="series-list" class="checkbox-grid">
+                    </div>
+                <p id="book-count">対象: 0 冊</p>
+            </div>
+        </details>
+
+        <div class="gacha-section">
+            <button id="gacha-btn" class="main-btn">ガチャを回す 🔄</button>
+        </div>
+
+        <div id="result-card" class="book-card hidden">
+            <p class="publisher-label" id="res-series-label">シリーズ名</p>
+            
+            <div class="book-content">
+                <div class="img-area">
+                    <img id="res-image" src="" alt="表紙画像">
+                </div>
+                <div class="info-area">
+                    <h2 id="res-title">本のタイトル</h2>
+                    <p class="author" id="res-author">著者名</p>
+                    <p class="price" id="res-price"></p>
+                    <p class="date" id="res-date"></p>
+                    
+                    <hr>
+
+                    <div class="buy-buttons">
+                        <a id="link-rakuten" href="#" target="_blank" class="btn-rakuten">楽天で見る</a>
+                        <a id="link-amazon" href="#" target="_blank" class="btn-amazon">Amazonで探す</a>
+                    </div>
+
+                    <hr>
+
+                    <div class="share-area">
+                        <a id="link-twitter" href="#" target="_blank" class="btn-twitter">
+                            <span>𝕏</span> 結果をシェアする
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="res-desc-area" class="description-area hidden">
+                <hr>
+                <details>
+                    <summary>あらすじを読む</summary>
+                    <p id="res-desc" class="desc-text"></p>
+                </details>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
