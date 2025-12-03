@@ -144,6 +144,7 @@ function setupEvents() {
 }
 
 // ガチャを回す処理（アニメーション演出付き）
+// ガチャを回す処理（演出強化版：だんだんゆっくりになる）
 function spinGacha() {
     const selectedGroups = getSelectedGroups();
     const targets = allBooks.filter(b => selectedGroups.includes(b.groupLabel));
@@ -153,67 +154,105 @@ function spinGacha() {
         return;
     }
 
-    // --- 演出開始 ---
+    // --- 準備 ---
     const btn = document.getElementById('gacha-btn');
     const card = document.getElementById('result-card');
     const titleEl = document.getElementById('res-title');
     const authorEl = document.getElementById('res-author');
     const imgEl = document.getElementById('res-image');
     
-    // ボタンを無効化
+    // ボタン無効化
     btn.disabled = true;
     btn.classList.add('disabled-btn');
     btn.innerText = "選書中...";
 
-    // カードを表示（中身は空っぽにしておく）
+    // カード表示（初期化）
     card.classList.remove('hidden');
-    card.classList.add('rumbling'); // 震えるアニメーション
+    card.classList.remove('flash-animation'); // 前回のクラスを消す
     card.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-    // 画像とボタン類は一旦隠す（ネタバレ防止）
+    // 中身を隠す
     imgEl.style.display = 'none';
+    imgEl.classList.remove('img-pop'); // アニメーションリセット
     document.querySelector('.buy-buttons').style.opacity = '0';
     document.querySelector('.share-area').style.opacity = '0';
     document.getElementById('res-price').innerText = "";
     document.getElementById('res-date').innerText = "";
-    document.getElementById('res-series-label').innerText = "選んでいます...";
+    document.getElementById('res-series-label').innerText = "書庫を検索中...";
     document.getElementById('res-desc-area').classList.add('hidden');
 
-    // スロット演出（パラパラ漫画）
+    // テキストにブレ効果をつける
+    titleEl.classList.add('text-blur');
+    authorEl.classList.add('text-blur');
+
+    // --- スロット演出ロジック ---
     let count = 0;
-    const maxCount = 20; // 何回切り替えるか
+    const minLoops = 20; // 最低何回切り替えるか
+    let speed = 50;      // スタート時の速さ（ミリ秒）
     
-    const interval = setInterval(() => {
-        // ランダムな本を仮表示
+    // 内部ループ関数（自分自身を呼び出す）
+    const slotLoop = () => {
+        // ランダム表示
         const randomBook = targets[Math.floor(Math.random() * targets.length)];
         titleEl.innerText = randomBook.title;
         authorEl.innerText = randomBook.author;
         
         count++;
 
-        // --- 演出終了（結果表示） ---
-        if (count > maxCount) {
-            clearInterval(interval);
-            
-            // 本当の当たりを決める
-            const finalBook = targets[Math.floor(Math.random() * targets.length)];
-            
-            // 演出解除
-            card.classList.remove('rumbling');
-            btn.disabled = false;
-            btn.classList.remove('disabled-btn');
-            btn.innerText = "ガチャを回す 🔄";
-            
-            // ボタン類を再表示
-            document.querySelector('.buy-buttons').style.opacity = '1';
-            document.querySelector('.share-area').style.opacity = '1';
-
-            // 最終結果を表示
-            displayResult(finalBook);
+        // だんだん遅くする（減速処理）
+        if (count > minLoops) {
+            speed += (count - minLoops) * 20; // どんどん遅延を増やす
         }
-    }, 50); // 0.05秒ごとに切り替え
+
+        // 終了判定（十分に遅くなったら止める）
+        if (speed > 600) {
+            // ★ フィニッシュ！
+            finishGacha(targets);
+        } else {
+            // まだ回す
+            setTimeout(slotLoop, speed);
+        }
+    };
+
+    // スタート！
+    slotLoop();
 }
 
+// ガチャ終了処理
+function finishGacha(targets) {
+    const btn = document.getElementById('gacha-btn');
+    const card = document.getElementById('result-card');
+    const titleEl = document.getElementById('res-title');
+    const authorEl = document.getElementById('res-author');
+    const imgEl = document.getElementById('res-image');
+
+    // 本当の当たりを決める
+    const finalBook = targets[Math.floor(Math.random() * targets.length)];
+
+    // テキストのブレを解除
+    titleEl.classList.remove('text-blur');
+    authorEl.classList.remove('text-blur');
+
+    // カードを光らせる
+    card.classList.add('flash-animation');
+
+    // ボタン復活
+    btn.disabled = false;
+    btn.classList.remove('disabled-btn');
+    btn.innerText = "ガチャを回す 🔄";
+    
+    // ボタン類フェードイン
+    document.querySelector('.buy-buttons').style.opacity = '1';
+    document.querySelector('.share-area').style.opacity = '1';
+
+    // 情報をセットして表示
+    displayResult(finalBook);
+
+    // 画像にズームインアニメーションをつける
+    if (finalBook.image_url) {
+        imgEl.classList.add('img-pop');
+    }
+}
 // 結果を画面に表示
 function displayResult(book) {
     // テキスト情報
