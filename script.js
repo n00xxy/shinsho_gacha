@@ -6,7 +6,6 @@ const APP_URL = window.location.href; // 今のURLを自動取得
 const AMAZON_ID = "shinsho0e5-22"; 
 
 // シリーズ名の自動グループ化リスト
-// （CSVのシリーズ名にこれらの文字が含まれていれば、そのグループとして扱います）
 const SERIES_GROUPS = [
     "岩波新書", 
     "岩波ジュニア新書",
@@ -40,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // 1. 時間帯によるテーマ切り替え
 function initTheme() {
-    // 18時〜翌朝6時はダークモードにする
     const hour = new Date().getHours();
     if (hour >= 18 || hour < 6) {
         document.body.classList.add('dark-mode');
@@ -59,11 +57,9 @@ function loadBooks() {
             results.data.forEach(book => {
                 if (!book.title || !book.series) return;
 
-                // 本のシリーズ名が、定義したグループのどれに当てはまるか確認
                 const matchedGroup = SERIES_GROUPS.find(group => book.series.includes(group));
                 
                 if (matchedGroup) {
-                    // グループ名（ラベル）をデータに追加してリストに保存
                     book.groupLabel = matchedGroup;
                     allBooks.push(book);
                 }
@@ -81,7 +77,6 @@ function createFilterCheckboxes() {
     container.innerHTML = '';
 
     SERIES_GROUPS.forEach(groupName => {
-        // そのグループの本が1冊もない場合は表示しない
         const hasBooks = allBooks.some(b => b.groupLabel === groupName);
         if (!hasBooks) return;
 
@@ -92,12 +87,10 @@ function createFilterCheckboxes() {
         checkbox.id = `grp-${groupName}`;
         checkbox.value = groupName;
         
-        // 初期選択リストに含まれていればチェックを入れる
         if (DEFAULT_SELECTED.includes(groupName)) {
             checkbox.checked = true;
         }
 
-        // チェック変更時に再計算
         checkbox.addEventListener('change', updateCount);
 
         const label = document.createElement('label');
@@ -125,16 +118,13 @@ function getSelectedGroups() {
 
 // 3. ボタン操作の設定
 function setupEvents() {
-    // ガチャボタン
     document.getElementById('gacha-btn').addEventListener('click', spinGacha);
 
-    // 全選択ボタン
     document.getElementById('btn-select-all').addEventListener('click', () => {
         document.querySelectorAll('#series-list input').forEach(cb => cb.checked = true);
         updateCount();
     });
 
-    // 御三家に戻すボタン
     document.getElementById('btn-reset-default').addEventListener('click', () => {
         document.querySelectorAll('#series-list input').forEach(cb => {
             cb.checked = DEFAULT_SELECTED.includes(cb.value);
@@ -146,7 +136,6 @@ function setupEvents() {
 // ガチャを回す処理
 function spinGacha() {
     const selectedGroups = getSelectedGroups();
-    // 選択されたグループの本だけを抽出
     const targets = allBooks.filter(b => selectedGroups.includes(b.groupLabel));
 
     if (targets.length === 0) {
@@ -154,7 +143,6 @@ function spinGacha() {
         return;
     }
 
-    // ランダムに1冊選ぶ
     const book = targets[Math.floor(Math.random() * targets.length)];
     displayResult(book);
 }
@@ -169,7 +157,7 @@ function displayResult(book) {
     document.getElementById('res-title').innerText = book.title;
     document.getElementById('res-author').innerText = `著: ${book.author}`;
     
-    // 画像（なければ非表示）
+    // 画像
     const img = document.getElementById('res-image');
     if (book.image_url) {
         img.src = book.image_url;
@@ -178,7 +166,7 @@ function displayResult(book) {
         img.style.display = 'none';
     }
 
-    // 価格（カンマ区切り）
+    // 価格
     if (book.price) {
         document.getElementById('res-price').innerText = `価格: ¥${Number(book.price).toLocaleString()}`;
     }
@@ -190,21 +178,21 @@ function displayResult(book) {
     // --- 楽天ボタン ---
     const rakutenBtn = document.getElementById('link-rakuten');
     if (book.item_url) {
-        // Python側で既にアフィリエイトリンク化されているURLが入っている
         rakutenBtn.href = book.item_url;
         rakutenBtn.style.display = 'inline-block';
     } else {
         rakutenBtn.style.display = 'none';
     }
 
-    // --- Amazonボタン（アフィリエイトID付与） ---
+    // --- Amazonボタン ---
     const amazonBtn = document.getElementById('link-amazon');
-    // タイトルで検索するURLを作成し、末尾に &tag=ID をつける
     amazonBtn.href = `https://www.amazon.co.jp/s?k=${encodeURIComponent(book.title)}&tag=${AMAZON_ID}`;
 
-    // --- X（Twitter）シェアボタン ---
-    const shareText = `新書ガチャの結果\n\n『${book.title}』\n著：${book.author}\nレーベル：${book.groupLabel}\n\n#新書ガチャ\n${book.item_url}`; // 最後に楽天URL（画像表示用）
-    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(APP_URL)}`;
+    // --- ツイートリンク作成 ---
+    // 構成：タイトル → 著者 → レーベル → 誘導文＆アプリURL → ハッシュタグ → 楽天URL（画像用）
+    const shareText = `新書ガチャの結果\n\n『${book.title}』\n著：${book.author}\nレーベル：${book.groupLabel}\n\n▼あなたも回してみる\n${APP_URL}\n\n#新書ガチャ\n${book.item_url}`;
+    
+    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
     document.getElementById('link-twitter').href = tweetUrl;
 
     // --- あらすじ ---
